@@ -1,0 +1,31 @@
+{
+  "name": "whatsapp-bulk-sender",
+  "version": "1.0.0",
+  "description": "Send bulk WhatsApp messages using whatsapp-web.js",
+  "main": "whatsapp-sender.js",
+  "scripts": {
+    "start": "node whatsapp-sender.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "whatsapp",
+    "bulk",
+    "messaging",
+    "automation"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "csv-parser": "^3.0.0",
+    "express": "^5.1.0",
+    "qrcode-terminal": "^0.12.0",
+    "whatsapp-web.js": "^1.23.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
