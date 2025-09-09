@@ -1,4 +1,4 @@
-const { Client, LocalAuth } = require('whatsapp-web.js');
+const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const fs = require('fs');
 const csv = require('csv-parser');
@@ -49,21 +49,20 @@ class WhatsAppBulkSender {
     async readContactsFromCSV(filePath) {
         return new Promise((resolve, reject) => {
             const contacts = [];
-            
             if (!fs.existsSync(filePath)) {
                 reject(new Error(`CSV file not found: ${filePath}`));
                 return;
             }
-
             fs.createReadStream(filePath)
                 .pipe(csv())
                 .on('data', (row) => {
-                    // Expected CSV format: name, phone, message (optional)
+                    // Expected CSV format: name, phone, message (optional), image (optional)
                     if (row.phone) {
                         contacts.push({
                             name: row.name || 'Unknown',
                             phone: this.formatPhoneNumber(row.phone),
-                            message: row.message || null
+                            message: row.message || null,
+                            image: row.image || null
                         });
                     }
                 })
@@ -104,7 +103,7 @@ class WhatsAppBulkSender {
 
             // Personalize message with contact name
             const personalizedMessage = message.replace('{name}', contact.name);
-            
+
             // Check if number exists on WhatsApp
             const numberId = await this.client.getNumberId(contact.phone);
             if (!numberId) {
@@ -112,9 +111,16 @@ class WhatsAppBulkSender {
                 return false;
             }
 
-            // Send message
-            await this.client.sendMessage(contact.phone, personalizedMessage);
-            console.log(`✅ Message sent to ${contact.name} (${contact.phone})`);
+            // Send image if provided
+            if (contact.image && fs.existsSync(contact.image)) {
+                const media = MessageMedia.fromFilePath(contact.image);
+                await this.client.sendMessage(contact.phone, media, { caption: personalizedMessage });
+                console.log(`✅ Image sent to ${contact.name} (${contact.phone})`);
+            } else {
+                // Send text message only
+                await this.client.sendMessage(contact.phone, personalizedMessage);
+                console.log(`✅ Message sent to ${contact.name} (${contact.phone})`);
+            }
             return true;
 
         } catch (error) {

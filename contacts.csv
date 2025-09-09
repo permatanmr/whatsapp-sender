@@ -1,2 +1,2 @@
-name,phone,message
-Gisca,+6287808468088,Hello {name}! This is a personalized message for you.
+name,phone,message,image
+Gisca,+6287808468088,Hello {name}! This is a personalized message for you.,./bakti.jpg
